@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>CeenShortLink</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- TODO: Fix when Ceen.PaaS is released
+    <PackageReference Include="Ceen.Database" Version="0.9.9" />
+    <PackageReference Include="Ceen.Extras" Version="0.9.9" />
+    <PackageReference Include="Ceen.Httpd" Version="0.9.9" />
+    <PackageReference Include="Ceen.Httpd.Cli" Version="0.9.9" />
+    <PackageReference Include="Ceen.Security" Version="0.9.9" /> 
+    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.PaaS\Ceen.PaaS.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Database\Ceen.Database.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Httpd\Ceen.Httpd.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Extras\Ceen.Extras.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Security\Ceen.Security.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Httpd.Cli\Ceen.Httpd.Cli.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Mvc\Ceen.Mvc.csproj" />
+  </ItemGroup>
+
+</Project>

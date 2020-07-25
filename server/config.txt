@@ -1,0 +1,90 @@
+httpport 12345
+httpaddress loopback
+
+# Setup loggers
+logger Ceen.Httpd.Logging.StdOutErrors
+logger Ceen.Extras.LogModule
+
+# Set up an outgoing email queue with retries
+module Ceen.Extras.QueueModule "emailqueue"
+set ratelimit 4/s
+set ConnectionString "queues.sqlite"
+
+# The main database for all things PaaS
+module Ceen.PaaS.DatabaseInstance
+set ConnectionString "Ceen.PaaS.sqlite"
+
+# The admin logins are in a separate database
+module Ceen.Security.Login.DatabaseStorageModule true true false
+
+# The short-link database
+module CeenShortLink.LinkDatabase
+set ConnectionString "CeenShortLink.sqlite"
+
+# The link cache module
+module CeenShortLink.LinkCache
+
+# The markdown renderer
+module Ceen.PaaS.Services.MarkdownRenderer
+
+# Custom logout feature
+handler "/api/v1/logout" Ceen.Security.Login.LogoutHandler
+set ResultStatusCode 200
+set ResultStatusMessage OK
+set RedirectUrl ""
+
+# Require XSRF on all API calls
+handler "/api/*" Ceen.Security.Login.XSRFTokenRequiredHandler
+handler "/api/v1/login" Ceen.Security.Login.LoginHandler
+
+# Attach user information to later handlers
+handler "/api/*" Ceen.PaaS.Services.LoginChecker
+
+# Admin stuff needs admin access
+handler "/api/v1/admin/*" Ceen.PaaS.Services.AdminRequiredHandler
+
+# Generate XSRF tokens for non-api pages
+handler "/admin/*" Ceen.Security.Login.XSRFTokenGeneratorHandler
+
+# Wire up only the PaaS endpoints that we will be using
+
+# Admin routes
+wirecontroller "/api/v1/admin/dashboardstats" CeenShortLink.AdminDashboardHandler
+wirecontroller "/api/v1/admin/frontpagesettings" CeenShortLink.AdminFrontpageSettingsHandler
+
+wirecontroller "/api/v1/admin/settings" Ceen.PaaS.AdminHandlers.AdminSettingsHandler
+wirecontroller "/api/v1/admin/emaillogs" Ceen.PaaS.AdminHandlers.EmailLogsHandler
+wirecontroller "/api/v1/admin/httplogs" Ceen.PaaS.AdminHandlers.HttpLogsHandler
+wirecontroller "/api/v1/admin/queues" Ceen.PaaS.AdminHandlers.QueuesHandler
+wirecontroller "/api/v1/admin/queue/{queue}" Ceen.PaaS.AdminHandlers.QueueHandler
+wirecontroller "/api/v1/admin/text" Ceen.PaaS.AdminHandlers.TextHandler
+wirecontroller "/api/v1/admin/users" Ceen.PaaS.AdminHandlers.UserHandler
+
+# Required for the UI to query login status
+wirecontroller "/api/v1/user" Ceen.PaaS.API.UserHandler
+
+# Non-admin users can also use the link administration endpoint
+wirecontroller "/api/v1/links" CeenShortLink.AdminLinkHandler
+
+# If we are using images
+#wirecontroller "/api/v1/images" Ceen.PaaS.API.ImageHandler
+
+# Anything not caught by the API gives 404
+handler "/api/*" Ceen.Httpd.Handler.StaticHandler
+set StatusCode 404
+
+# Any site needs these
+handler "/tos" Ceen.PaaS.Services.TermsOfService
+handler "/privacy" Ceen.PaaS.Services.PrivacyPolicy
+
+# Add a page for users going directly to the domain
+handler "/" CeenShortLink.FrontpageHandler
+handler "/index.htm" CeenShortLink.FrontpageHandler
+handler "/index.html" CeenShortLink.FrontpageHandler
+
+# The actual link forwarding action
+handler "*" CeenShortLink.LinkHandler
+
+# For debug, proxy to npm runner
+handler "*" Ceen.Httpd.Handler.SimpleProxyHandler
+set HostUrl "http://localhost:9527"
