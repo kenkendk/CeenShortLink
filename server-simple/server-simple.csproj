@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Httpd.Cli\Ceen.Httpd.Cli.csproj" />
+    <ProjectReference Include="..\..\Ceenhttpd\Ceen.Common\Ceen.Common.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>server_simple</RootNamespace>
+  </PropertyGroup>
+
+</Project>

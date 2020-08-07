@@ -1,0 +1,5 @@
+Anything not starting with / is a comment
+
+/abc https://google.com/search?q=abc
+/xyz https://google.com/search?q=xyz
+#/123 https://google.com/search?q=123
