@@ -25,10 +25,15 @@ namespace CeenShortLink
         /// </summary>
         private class LinkEntryCount
         {
+            // We only assign these via reflection
+            #pragma warning disable 0649
+
             public long ID;
             public string Match;
             public string TargetUrl;
             public long Count;
+            
+            #pragma warning restore 0649            
         }
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace CeenShortLink
                     Clicks = db.SelectCount<LinkEntryUsage>(x => x.When > timelimit),
                     // GroupBy not supported by Ceen.Database
                     MostPopular = db.CustomQuery<LinkEntryCount>(
-                        $"SELECT {nameof(LinkEntry.ID)}, {nameof(LinkEntry.Match)}, {nameof(LinkEntry.TargetUrl)}, CNT as Count " +
+                        $"SELECT {nameof(LinkEntry.ID)} AS {nameof(LinkEntryCount.ID)}, {nameof(LinkEntry.Match)} AS {nameof(LinkEntryCount.Match)}, {nameof(LinkEntry.TargetUrl)} AS {nameof(LinkEntryCount.TargetUrl)}, CNT as {nameof(LinkEntryCount.Count)} " +
                         $"FROM {nameof(LinkEntry)} A, (" +
                             $"SELECT {nameof(LinkEntryUsage.LinkID)}, COUNT(*) AS CNT" +
                             $" FROM {nameof(LinkEntryUsage)}" +
@@ -56,7 +61,7 @@ namespace CeenShortLink
                 }
             );
 
-            // Run concurrently
+            // Run concurrently as they query two different databases
             var dict = await base.IndexResultsAsync(timelimit);
             // Patch with results
             dict["Links"] = await dbtask;
