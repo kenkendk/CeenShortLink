@@ -349,8 +349,10 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-# Databases created when running
+# The secrets file
 server/secrets.txt
+
+# Databases created when running
 server/queues.sqlite
 server/sessiondata.sqlite
 server/logdata.sqlite
